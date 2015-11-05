@@ -1,7 +1,7 @@
 require('spec_helper')
 
 @@create_book = lambda do |attributes|
-  base = {:title => '', :checkout => '1919-05-08', :author_id => nil, :patron_id => nil, :id => nil}
+  base = {:title => '', :checkout => '1919-05-08', :author_id => 0, :patron_id => 0, :id => nil}
   base.merge!(attributes)
   Book.new(base)
 end
