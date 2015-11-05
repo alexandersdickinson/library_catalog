@@ -21,6 +21,7 @@ class Author
     attributes.merge!(updates)
     @last_name = attributes.fetch(:last_name)
     @first_name = attributes.fetch(:first_name)
+    DB.exec("UPDATE authors SET last_name = '#{@last_name}', first_name = '#{@first_name}' WHERE id = #{self.id()}")
   end
   
   def self.all()
@@ -29,9 +30,16 @@ class Author
     returned_authors.each() do |author|
       last_name = author.fetch('last_name')
       first_name = author.fetch('first_name')
-      authors.push(Author.new({:last_name => last_name, :first_name => first_name, :id => nil}))
+      id = author.fetch('id').to_i()
+      authors.push(Author.new({:last_name => last_name, :first_name => first_name, :id => id}))
     end
     authors
+  end
+  
+  def self.find(id)
+    Author.all().each() do |author|
+      return author if author.id() == id
+    end
   end
   
   def ==(comparison)
