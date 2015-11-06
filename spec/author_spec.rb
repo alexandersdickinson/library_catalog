@@ -1,11 +1,5 @@
 require('spec_helper')
 
-@@create_author = lambda do |attributes|
-  base = {:last_name => "", :first_name => "", :id => nil}
-  base.merge!(attributes)
-  Author.new(base)
-end
-
 describe('#save') do
   it('adds an author') do
     test_author = @@create_author.call({:last_name => "King"})

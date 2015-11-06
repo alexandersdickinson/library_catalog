@@ -7,6 +7,18 @@ class Patron
     @id = attributes.fetch(:id)
   end
   
+  def check_out(book)
+    if book.is_checked_out()
+      return false
+    else
+      book.update({:is_checked_out => true, :patron_id => self.id(), :checkout => Date.today().to_s()})
+    end
+  end
+  
+  def return(book)
+    book.update({:is_checked_out => false, :patron_id => 0})
+  end
+  
   def save()
     id = DB.exec("INSERT INTO patrons (last_name, first_name) VALUES ('#{@last_name}', '#{@first_name}') RETURNING id;")
     @id = id.first().fetch('id').to_i()

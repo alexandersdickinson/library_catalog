@@ -14,3 +14,21 @@ RSpec.configure() do |config|
     DB.exec("DELETE FROM books *;")
   end
 end
+
+@@create_patron = lambda do |attributes|
+  base = {:last_name => '', :first_name => '', :id => nil}
+  base.merge!(attributes)
+  Patron.new(base)
+end
+
+@@create_author = lambda do |attributes|
+  base = {:last_name => "", :first_name => "", :id => nil}
+  base.merge!(attributes)
+  Author.new(base)
+end
+
+@@create_book = lambda do |attributes|
+  base = {:title => '', :checkout => '1919-05-08', :author_id => 0, :patron_id => 0, :id => nil}
+  base.merge!(attributes)
+  Book.new(base)
+end

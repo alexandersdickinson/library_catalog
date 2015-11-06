@@ -1,16 +1,17 @@
 class Book
-  attr_reader(:title, :checkout, :author_id, :patron_id, :id)
+  attr_reader(:title, :checkout, :author_id, :patron_id, :is_checked_out, :id)
   
   def initialize(attributes)
     @title = attributes.fetch(:title)
     @checkout = attributes.fetch(:checkout)
     @author_id = attributes.fetch(:author_id)
     @patron_id = attributes.fetch(:patron_id)
+    @is_checked_out = false
     @id = attributes.fetch(:id)
   end
   
   def save()
-    id = DB.exec("INSERT INTO books (title, checkout, author_id, patron_id) VALUES ('#{@title}', '#{@checkout}', #{@author_id}, #{@patron_id}) RETURNING id;")
+    id = DB.exec("INSERT INTO books (title, checkout, author_id, patron_id, is_checked_out) VALUES ('#{@title}', '#{@checkout}', #{@author_id}, #{@patron_id}, #{@is_checked_out}) RETURNING id;")
     @id = id.first().fetch('id').to_i()
   end
   
@@ -19,13 +20,14 @@ class Book
   end
   
   def update(updates)
-    attributes = {:title => @title, :checkout => @checkout, :author_id => @author_id, :patron_id => @patron_id}
+    attributes = {:title => @title, :checkout => @checkout, :author_id => @author_id, :patron_id => @patron_id, :is_checked_out => @is_checked_out}
     attributes.merge!(updates)
     @title = attributes.fetch(:title)
     @checkout = attributes.fetch(:checkout)
     @author_id = attributes.fetch(:author_id)
     @patron_id = attributes.fetch(:patron_id)
-    DB.exec("UPDATE books SET title = '#{@title}', checkout = '#{@checkout}', author_id = #{@author_id}, patron_id = #{@patron_id} WHERE id = #{self.id()};")
+    @is_checked_out = attributes.fetch(:is_checked_out)
+    DB.exec("UPDATE books SET title = '#{@title}', checkout = '#{@checkout}', author_id = #{@author_id}, patron_id = #{@patron_id}, is_checked_out = #{@is_checked_out} WHERE id = #{self.id()};")
   end
   
   def self.all()
@@ -37,7 +39,8 @@ class Book
       author_id = book.fetch('author_id').to_i()
       patron_id = book.fetch('patron_id').to_i()
       id = book.fetch('id').to_i()
-      books.push(Book.new({:title => title, :checkout => checkout, :author_id => author_id, :patron_id => patron_id, :id => id}))
+      is_checked_out = book.fetch('is_checked_out')
+      books.push(Book.new({:title => title, :checkout => checkout, :author_id => author_id, :patron_id => patron_id, :is_checked_out => is_checked_out, :id => id}))
     end
     books
   end

@@ -1,9 +1,80 @@
 require('spec_helper')
 
-@@create_patron = lambda do |attributes|
-  base = {:last_name => '', :first_name => '', :id => nil}
-  base.merge!(attributes)
-  Patron.new(base)
+describe('#check_out') do
+  it('assigns a book to a patron') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron.save()
+    test_patron.check_out(test_book)
+    expect(test_book.patron_id()).to(eq(test_patron.id()))
+  end
+  
+  it('sets the checkout date to the current date') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron.save()
+    test_patron.check_out(test_book)
+    expect(test_book.checkout()).to(eq(Date.today().to_s()))
+  end
+  
+  it('sets is_checked_out to true') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron.save()
+    test_patron.check_out(test_book)
+    expect(test_book.is_checked_out()).to(eq(true))
+  end
+  
+  it('returns false when the book is already checked out') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron1 = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron1.save()
+    test_patron2 = @@create_patron.call({:last_name => "Doe", :first_name => "Jane"})
+    test_patron2.save()
+    test_patron1.check_out(test_book)
+    expect(test_patron2.check_out(test_book)).to(eq(false))
+  end
+  
+  it('does not assign a book to a patron when the book is already checked out') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron1 = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron1.save()
+    test_patron2 = @@create_patron.call({:last_name => "Doe", :first_name => "Jane"})
+    test_patron2.save()
+    test_patron1.check_out(test_book)
+    test_patron2.check_out(test_book)
+    expect(test_book.patron_id()).to(eq(test_patron1.id()))
+  end
+end
+
+describe('#return') do
+  it('dissociates a book from the patron') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron.save()
+    test_patron.check_out(test_book)
+    test_patron.return(test_book)
+    expect(test_book.patron_id()).to(eq(0))
+  end
+  
+  it('updates the status of a book to not checked out') do
+    test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})
+    test_book.save()
+    test_patron = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron.save()
+    test_patron.check_out(test_book)
+    test_patron.return(test_book)
+    expect(test_book.is_checked_out()).to(eq(false))
+  end
+end
+
+describe('#overdue?') do
 end
 
 describe('#save') do
