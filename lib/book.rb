@@ -10,6 +10,10 @@ class Book
     @id = attributes.fetch(:id)
   end
   
+  def overdue?()
+    Date.today() - @checkout >= 21
+  end
+  
   def save()
     id = DB.exec("INSERT INTO books (title, checkout, author_id, patron_id, is_checked_out) VALUES ('#{@title}', '#{@checkout}', #{@author_id}, #{@patron_id}, #{@is_checked_out}) RETURNING id;")
     @id = id.first().fetch('id').to_i()
@@ -49,6 +53,19 @@ class Book
     Book.all().each() do |book|
       return book if book.id() == id
     end
+  end
+  
+  def self.search_by(criteria)
+    Book.all().each() do |book|
+      matches = true
+      author = Author.find(book.author_id())
+      attributes = {:title => book.title(), :last_name => author.last_name(), :first_name => author.first_name()}
+      criteria.each_key() do |key|
+        matches = false if criteria[key] != attributes[key]
+      end
+      return book if matches
+    end
+    return false
   end
   
   def ==(comparison)

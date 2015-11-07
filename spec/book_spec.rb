@@ -6,6 +6,51 @@ require('spec_helper')
   Book.new(base)
 end
 
+describe('.search_by') do
+  it('finds books matching a single criterion') do
+    test_author1 = @@create_author.call({:last_name => "Conrad", :first_name => "Joseph"})
+    test_author1.save()
+    test_author2 = @@create_author.call({:last_name => "Rowling", :first_name => "Joanne"})
+    test_author2.save()
+    test_book1 = @@create_book.call({:title => "Social Sciences as Sorcery", :author_id => test_author1.id()})
+    test_book1.save()
+    test_book2 = @@create_book.call({:title => "Philosophical Investigations", :author_id => test_author2.id()})
+    test_book2.save()
+    expect(Book.search_by({:title => "Philosophical Investigations"})).to(eq(test_book2))
+  end
+  
+  it('finds books matching multiple criteria') do
+    test_author1 = @@create_author.call({:last_name => "Conrad", :first_name => "Joseph"})
+    test_author1.save()
+    test_author2 = @@create_author.call({:last_name => "Rowling", :first_name => "Joanne"})
+    test_author2.save()
+    test_book1 = @@create_book.call({:title => "Heart of Darkness", :author_id => test_author1.id()})
+    test_book1.save()
+    test_book2 = @@create_book.call({:title => "Heart of Darkness", :author_id => test_author2.id()})
+    test_book2.save()
+    expect(Book.search_by({:title => "Heart of Darkness", :last_name => "Conrad", :first_name => "Joseph"})).to(eq(test_book1))
+  end
+  
+  it('returns false when a single criteria does not match') do
+    test_author1 = @@create_author.call({:last_name => "Conrad", :first_name => "Joseph"})
+    test_author1.save()
+    test_author2 = @@create_author.call({:last_name => "Rowling", :first_name => "Joanne"})
+    test_author2.save()
+    test_book1 = @@create_book.call({:title => "Heart of Darkness", :author_id => test_author1.id()})
+    test_book1.save()
+    test_book2 = @@create_book.call({:title => "Heart of Darkness", :author_id => test_author2.id()})
+    test_book2.save()
+    expect(Book.search_by({:title => "Heart of Darkness", :last_name => "Rowling", :first_name => "Joseph"})).to(eq(false))
+  end
+end
+
+describe('#overdue?') do
+  it('returns true when a book is checked out for three weeks') do
+    test_book = @@create_book.call({:checkout => (Date.new() - 21)})
+    expect(test_book.overdue?()).to(eq(true))
+  end
+end
+
 describe('#save') do
   it('saves a book') do
     test_book = @@create_book.call({})

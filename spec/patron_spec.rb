@@ -74,9 +74,6 @@ describe('#return') do
   end
 end
 
-describe('#overdue?') do
-end
-
 describe('#save') do
   it('saves a patron') do
     test_patron = @@create_patron.call({})
