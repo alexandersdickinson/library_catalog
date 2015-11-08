@@ -52,6 +52,68 @@ describe('#check_out') do
   end
 end
 
+describe('#books') do
+  it('provides a list of books currently checked out') do
+    test_book1 = @@create_book.call({})
+    test_book2 = @@create_book.call({})
+    test_book3 = @@create_book.call({})
+    test_book4 = @@create_book.call({})
+    test_book1.save()
+    test_book2.save()
+    test_book3.save()
+    test_book4.save()
+    test_patron = @@create_patron.call({})
+    test_patron.save()
+    test_patron.check_out(test_book1)
+    test_patron.check_out(test_book2)
+    test_patron.check_out(test_book3)
+    expect(test_patron.books()).to(eq([test_book1, test_book2, test_book3]))
+  end
+end
+
+describe('#checkout_history') do
+  it('provides a list of books checked out by the patron regardless of whether they are still checked out or returned') do
+    test_book1 = @@create_book.call({})
+    test_book2 = @@create_book.call({})
+    test_book3 = @@create_book.call({})
+    test_book4 = @@create_book.call({})
+    test_book5 = @@create_book.call({})
+    test_book6 = @@create_book.call({})
+    test_book1.save()
+    test_book2.save()
+    test_book3.save()
+    test_book4.save()
+    test_book5.save()
+    test_book6.save()
+    test_patron = @@create_patron.call({})
+    test_patron.save()
+    test_patron.check_out(test_book1)
+    test_patron.return(test_book1)
+    test_patron.check_out(test_book2)
+    test_patron.check_out(test_book3)
+    expect(test_patron.checkout_history()).to(eq([test_book1, test_book2, test_book3]))
+  end
+end
+
+describe('#overdue') do
+  it('provides a list of overdue books') do
+    test_book1 = @@create_book.call({})
+    test_book2 = @@create_book.call({})
+    test_book3 = @@create_book.call({})
+    test_book1.save()
+    test_book2.save()
+    test_book3.save()
+    test_patron = @@create_patron.call({})
+    test_patron.save()
+    test_patron.check_out(test_book1)
+    test_patron.check_out(test_book2)
+    test_patron.check_out(test_book3)
+    test_book1.update({:checkout => Date.new(1991, 8, 6)})
+    test_book2.update({:checkout => Date.new(1991, 8, 6)})
+    expect(test_patron.overdue()).to(eq([test_book1, test_book2]))
+  end
+end
+
 describe('#return') do
   it('dissociates a book from the patron') do
     test_book = @@create_book.call({:title => "Social Sciences as Sorcery"})

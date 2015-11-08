@@ -79,10 +79,10 @@ describe('#update') do
   it('updates multiple attributes') do
     test_book = @@create_book.call({})
     test_book.save()
-    test_book.update({:title => "Social Sciences as Sorcery", :patron_id => 3, :checkout => "1919-05-08"})
+    test_book.update({:title => "Social Sciences as Sorcery", :patron_id => 3, :checkout => Date.parse("1919-05-08")})
     expect(Book.find(test_book.id()).title()).to(eq("Social Sciences as Sorcery"))
     expect(Book.find(test_book.id()).patron_id()).to(eq(3))
-    expect(Book.find(test_book.id()).checkout()).to(eq("1919-05-08"))
+    expect(Book.find(test_book.id()).checkout()).to(eq(Date.parse("1919-05-08")))
   end
 end
 

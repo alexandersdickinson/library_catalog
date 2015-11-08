@@ -21,7 +21,7 @@ class Author
     attributes.merge!(updates)
     @last_name = attributes.fetch(:last_name)
     @first_name = attributes.fetch(:first_name)
-    DB.exec("UPDATE authors SET last_name = '#{@last_name}', first_name = '#{@first_name}' WHERE id = #{self.id()}")
+    DB.exec("UPDATE authors SET last_name = '#{@last_name}', first_name = '#{@first_name}' WHERE id = #{self.id()};")
   end
   
   def self.all()

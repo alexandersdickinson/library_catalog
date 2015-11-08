@@ -12,7 +12,25 @@ class Patron
       return false
     else
       book.update({:is_checked_out => true, :patron_id => self.id(), :checkout => Date.today().to_s()})
+      DB.exec("INSERT INTO checkouts (patron_id, book_id) VALUES (#{self.id()}, #{book.id()});")
     end
+  end
+  
+  def books()
+    books = []
+    Book.all().each { |book| books.push(book) if book.patron_id() == self.id() }
+    books
+  end 
+  
+  def overdue()
+    overdue_books = []
+    self.books().each { |book| overdue_books.push(book) if book.overdue?() }
+    overdue_books
+  end
+  
+  def checkout_history()
+    returned_checkouts = DB.exec("SELECT * FROM checkouts WHERE patron_id = #{self.id()};")
+    books = returned_checkouts.map { |checkout| Book.find(checkout.fetch('book_id').to_i())}
   end
   
   def return(book)
@@ -33,7 +51,7 @@ class Patron
     attributes.merge!(updates)
     @last_name = attributes.fetch(:last_name)
     @first_name = attributes.fetch(:first_name)
-    DB.exec("UPDATE patrons SET last_name = '#{@last_name}', first_name = '#{@first_name}' WHERE id = #{self.id()}")
+    DB.exec("UPDATE patrons SET last_name = '#{@last_name}', first_name = '#{@first_name}' WHERE id = #{self.id()};")
   end
   
   def self.all()

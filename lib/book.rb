@@ -39,7 +39,7 @@ class Book
     books = []
     returned_books.each() do |book|
       title = book.fetch('title')
-      checkout = book.fetch('checkout')
+      checkout = Date.parse(book.fetch('checkout'))
       author_id = book.fetch('author_id').to_i()
       patron_id = book.fetch('patron_id').to_i()
       id = book.fetch('id').to_i()
