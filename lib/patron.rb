@@ -72,6 +72,20 @@ class Patron
     end
   end
   
+  def self.search_by(criteria)
+    patrons = []
+    Patron.all().each() do |patron|
+      matches = true
+      attributes = {:last_name => patron.last_name(), :first_name => patron.first_name()}
+      criteria.each_key() do |key|
+        matches = false if criteria[key] != attributes[key]
+      end
+      patrons.push(patron) if matches
+    end
+    return false if patrons.length() == 0
+    patrons
+  end
+  
   def ==(comparison)
     self.last_name() == comparison.last_name() && self.first_name() == self.first_name()
   end

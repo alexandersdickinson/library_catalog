@@ -56,6 +56,7 @@ class Book
   end
   
   def self.search_by(criteria)
+    books = []
     Book.all().each() do |book|
       matches = true
       author = Author.find(book.author_id())
@@ -63,9 +64,10 @@ class Book
       criteria.each_key() do |key|
         matches = false if criteria[key] != attributes[key]
       end
-      return book if matches
+      books.push(book) if matches
     end
-    return false
+    return false if books.length() == 0
+    books
   end
   
   def ==(comparison)

@@ -195,6 +195,40 @@ describe('.find') do
   end
 end
 
+describe('.search_by') do
+  it('finds patrons based on a single criterion') do
+    test_patron1 = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron2 = @@create_patron.call({:last_name => "Doe", :first_name => "Jane"})
+    test_patron1.save()
+    test_patron2.save()
+    expect(Patron.search_by({:last_name => "Smith"})).to(eq([test_patron1]))
+  end
+  
+  it('returns multiple matching patrons') do
+    test_patron1 = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron2 = @@create_patron.call({:last_name => "Smith", :first_name => "Jon"})
+    test_patron1.save()
+    test_patron2.save()
+    expect(Patron.search_by({:last_name => "Smith"})).to(eq([test_patron1, test_patron2]))
+  end
+  
+  it('finds patrons based on multiple criteria') do
+    test_patron1 = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron2 = @@create_patron.call({:last_name => "Smith", :first_name => "Jon"})
+    test_patron1.save()
+    test_patron2.save()
+    expect(Patron.search_by({:last_name => "Smith", :first_name => "John"})).to(eq([test_patron1]))
+  end
+  
+  it('returns false if a single criterion does not match') do
+    test_patron1 = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron2 = @@create_patron.call({:last_name => "Smith", :first_name => "Jon"})
+    test_patron1.save()
+    test_patron2.save()
+    expect(Patron.search_by({:last_name => "Smith", :first_name => "Jawn"})).to(eq(false))
+  end
+end
+
 describe('#==') do
   it('compares patrons based on their first and last names') do
     test_patron1 = @@create_patron.call({:last_name => "Nelson", :first_name => "Prince"})

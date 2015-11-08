@@ -1,0 +1,17 @@
+<ul>
+	<%@patrons.each() do |patron|%>
+		<h2><li>
+			<a href='/<%= patron.id()%>'><%= "#{patron.last_name()}, #{patron.first_name()}"%></a>
+
+			<form action='/' method='post'>
+				<input name='_method' type='hidden' value='delete'>
+				<input name='patron-id' type='hidden' value='<%= patron.id()%>'>
+				<button class='btn btn-danger' type='submit' id='delete-<%= patron.last_name().downcase()%>-<%= patron.first_name().downcase()%>'>Delete</button>
+			</form>
+		
+			<a href='/<%= patron.id()%>/edit' id='update-<%= patron.last_name().downcase()%>-<%= patron.first_name().downcase()%>' class='btn btn-warning'>Edit</a>
+		</li></h2>
+	<%end%>
+</ul>
+
+<a href='new_patron' class='btn btn-primary'>Add Patron</a>
