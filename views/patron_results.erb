@@ -1,0 +1,11 @@
+<%if @patrons != false%>
+	<h2><ul>
+		<%@patrons.each() do |patron|%>
+			<li>
+				<a href='/patrons/<%= patron.id()%>'><%= "#{patron.last_name()}, #{patron.first_name()}"%></a>
+			</li>
+		<%end%>
+	</ul></h2>
+<%else%>
+	<h2>No patrons found.</h2>
+<%end%>

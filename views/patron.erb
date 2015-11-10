@@ -1,0 +1,8 @@
+<form action='/patrons/delete_success' method='post'>
+	<input name='_method' type='hidden' value='delete'>
+	<input name='patron-id' type='hidden' value='<%= @patron.id()%>'>
+	<div class='btn-group' role='group'>
+		<button class='btn btn-danger' type='submit'>Delete Patron</button>
+		<a href='/patrons/<%= @patron.id()%>/edit' class='btn btn-warning'>Edit Patron</a>
+	</div>
+</form>
