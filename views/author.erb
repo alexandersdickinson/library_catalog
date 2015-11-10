@@ -1,0 +1,8 @@
+<form action='/authors/delete_success' method='post'>
+	<input name='_method' type='hidden' value='delete'>
+	<input name='patron-id' type='hidden' value='<%= @author.id()%>'>
+	<div class='btn-group' role='group'>
+		<button class='btn btn-danger' type='submit'>Delete Author</button>
+		<a href='/patrons/<%= @author.id()%>/edit' class='btn btn-warning'>Edit Author</a>
+	</div>
+</form>

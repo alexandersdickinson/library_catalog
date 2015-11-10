@@ -42,6 +42,20 @@ class Author
     end
   end
   
+  def self.search_by(criteria)
+    authors = []
+    Author.all().each() do |author|
+      matches = true
+      attributes = {:last_name => author.last_name(), :first_name => author.first_name()}
+      criteria.each_key() do |key|
+        matches = false if criteria[key] != attributes[key]
+      end
+      authors.push(author) if matches
+    end
+    return false if authors.length() == 0
+    authors
+  end
+  
   def ==(comparison)
     self.last_name() == comparison.last_name() && self.first_name() == comparison.first_name()
   end

@@ -59,6 +59,40 @@ describe('.find') do
   end
 end
 
+describe('.search_by') do
+  it('finds authors based on a single criterion') do
+    test_author1 = @@create_author.call({:last_name => "Smith", :first_name => "John"})
+    test_author2 = @@create_author.call({:last_name => "Doe", :first_name => "Jane"})
+    test_author1.save()
+    test_author2.save()
+    expect(Author.search_by({:last_name => "Smith"})).to(eq([test_author1]))
+  end
+  
+  it('returns multiple matching authors') do
+    test_author1 = @@create_author.call({:last_name => "Smith", :first_name => "John"})
+    test_author2 = @@create_author.call({:last_name => "Smith", :first_name => "Jon"})
+    test_author1.save()
+    test_author2.save()
+    expect(Author.search_by({:last_name => "Smith"})).to(eq([test_author1, test_author2]))
+  end
+  
+  it('finds authors based on multiple criteria') do
+    test_author1 = @@create_author.call({:last_name => "Smith", :first_name => "John"})
+    test_author2 = @@create_author.call({:last_name => "Smith", :first_name => "Jon"})
+    test_author1.save()
+    test_author2.save()
+    expect(Author.search_by({:last_name => "Smith", :first_name => "John"})).to(eq([test_author1]))
+  end
+  
+  it('returns false if a single criterion does not match') do
+    test_author1 = @@create_author.call({:last_name => "Smith", :first_name => "John"})
+    test_author2 = @@create_author.call({:last_name => "Smith", :first_name => "Jon"})
+    test_author1.save()
+    test_author2.save()
+    expect(Author.search_by({:last_name => "Smith", :first_name => "Jawn"})).to(eq(false))
+  end
+end
+
 describe('#==') do
   it('compares authors based on their names') do
     test_author1 = @@create_author.call({:last_name => "Andreski", :first_name => "Stanislav"})
