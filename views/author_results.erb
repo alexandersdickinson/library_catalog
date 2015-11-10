@@ -1,0 +1,11 @@
+<%if @authors != false%>
+	<h2><ul>
+		<%@authors.each() do |author|%>
+			<li>
+				<a href='/authors/<%= author.id()%>'><%= "#{author.last_name()}, #{author.first_name()}"%></a>
+			</li>
+		<%end%>
+	</ul></h2>
+<%else%>
+	<h2>No authors found.</h2>
+<%end%>

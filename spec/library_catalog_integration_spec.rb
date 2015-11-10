@@ -143,3 +143,55 @@ describe('the author search path', :type => :feature) do
     expect(page).to(have_content("No authors found."))
   end
 end
+
+describe('the author deletion path', :type => :feature) do
+  it('displays a message confirming author deletion') do
+    author = Author.new({:last_name => "Smith", :first_name => "John", :id => nil})
+    author.save()
+    visit("/authors/#{author.id()}")
+    click_button('Delete Author')
+    expect(page).to(have_content("Smith, John successfully deleted"))
+  end
+  
+  it('deletes the author from the database') do
+    author = Author.new({:last_name => "Smith", :first_name => "John", :id => nil})
+    author.save()
+    visit('/')
+    click_link("Search Authors")
+    fill_in('last-name', :with => "Smith")
+    click_button('Search')
+    click_link('Smith, John')
+    click_button('Delete Author')
+    click_link('Search Authors')
+    fill_in('last-name', :with => "Smith")
+    expect(page).not_to(have_content("Smith, John"))
+  end
+end
+
+describe('the author edit path', :type => :feature) do
+  it('edits a author') do
+    author = Author.new({:last_name => "Smith", :first_name => "John", :id => nil})
+    author.save()
+    visit('/')
+    click_link("Search Authors")
+    fill_in('last-name', :with => "Smith")
+    click_button('Search')
+    click_link('Smith, John')
+    click_link('Edit Author')
+    fill_in('last-name', :with => "Doe")
+    fill_in('first-name', :with => "Jane")
+    click_button('Edit Author')
+    expect(page).to(have_content("Doe, Jane"))
+  end
+end
+
+describe('the book creation path', :type => :feature) do
+  it('creates a book') do
+    author = Author.new({:last_name => "James", :first_name => "Montague", :id => nil})
+    author.save()
+    visit("authors/#{author.id()}")
+    fill_in("title", :with => "The Mezzotint")
+    click_button("Add Book")
+    expect(page).to(have_content("The Mezzotint"))
+  end
+end

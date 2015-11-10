@@ -1,8 +1,27 @@
+<%if @books != false%>
+	<ul>
+		<%@books.each() do |book|%>
+			<h2><li>
+				<a href='/books/<%= book.id()%>'><%= book.title()%></a>
+			</li><h2>
+		<%end%>
+	</ul>
+<%end%>
+
+<form action='/authors/<%= @author.id()%>/books/new' method='post'>
+	<div class='form-group'>
+		<label for='title'>Title</label>
+		<input name='title' id='title' type='text' class='form-control'>
+	</div>
+	
+	<button class='btn btn-primary' type='submit'>Add Book</button>
+</form>
+
 <form action='/authors/delete_success' method='post'>
 	<input name='_method' type='hidden' value='delete'>
-	<input name='patron-id' type='hidden' value='<%= @author.id()%>'>
+	<input name='author-id' type='hidden' value='<%= @author.id()%>'>
 	<div class='btn-group' role='group'>
 		<button class='btn btn-danger' type='submit'>Delete Author</button>
-		<a href='/patrons/<%= @author.id()%>/edit' class='btn btn-warning'>Edit Author</a>
+		<a href='/authors/<%= @author.id()%>/edit' class='btn btn-warning'>Edit Author</a>
 	</div>
 </form>
