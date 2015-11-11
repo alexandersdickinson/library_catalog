@@ -31,7 +31,7 @@ end
 
 post('/authors/:id/books/new') do
   @author = Author.find(params.fetch('id').to_i())
-  @book = Book.new(:title => params.fetch('title'), :checkout => nil, :author_id => @author.id(), :patron_id => nil, :id => nil)
+  @book = Book.new(:title => params.fetch('title'), :checkout => Date.new(1900, 1, 1), :author_id => @author.id(), :patron_id => 0, :id => nil)
   @book.save()
   @books = Book.search_by({:last_name => @author.last_name(), :first_name => @author.first_name()})
   @header = "#{@author.last_name()}, #{@author.first_name()}"
