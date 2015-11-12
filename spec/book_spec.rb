@@ -1,11 +1,5 @@
 require('spec_helper')
 
-@@create_book = lambda do |attributes|
-  base = {:title => '', :checkout => '1919-05-08', :author_id => 0, :patron_id => 0, :id => nil}
-  base.merge!(attributes)
-  Book.new(base)
-end
-
 describe('.search_by') do
   it('finds books matching a single criterion') do
     test_author1 = @@create_author.call({:last_name => "Conrad", :first_name => "Joseph"})
@@ -53,6 +47,19 @@ describe('.search_by') do
     test_book2 = @@create_book.call({:title => "Heart of Darkness", :author_id => test_author2.id()})
     test_book2.save()
     expect(Book.search_by({:title => "Heart of Darkness", :last_name => "Rowling", :first_name => "Joseph"})).to(eq(false))
+  end
+  
+  it('searches based on check out status') do
+    test_patron = @@create_patron.call({:last_name => "Smith", :first_name => "John"})
+    test_patron.save()
+    test_author = @@create_author.call({:last_name => "Rowling", :first_name => "Joanne"})
+    test_author.save()
+    test_book1 = @@create_book.call({:title => "Harry Potter", :author_id => test_author.id()})
+    test_book1.save()
+    test_book2 = @@create_book.call({:title => "The Casual Vacancy", :author_id => test_author.id()})
+    test_book2.save()
+    test_patron.check_out(test_book1)
+    expect(Book.search_by({:last_name => "Rowling", :is_checked_out => false})).to(eq([test_book2]))
   end
 end
 

@@ -6,7 +6,7 @@ class Book
     @checkout = attributes.fetch(:checkout)
     @author_id = attributes.fetch(:author_id)
     @patron_id = attributes.fetch(:patron_id)
-    @is_checked_out = false
+    @is_checked_out = attributes.fetch(:is_checked_out)
     @id = attributes.fetch(:id)
   end
   
@@ -31,7 +31,8 @@ class Book
     @author_id = attributes.fetch(:author_id)
     @patron_id = attributes.fetch(:patron_id)
     @is_checked_out = attributes.fetch(:is_checked_out)
-    DB.exec("UPDATE books SET title = '#{@title}', checkout = '#{@checkout}', author_id = #{@author_id}, patron_id = #{@patron_id}, is_checked_out = #{@is_checked_out} WHERE id = #{self.id()};")
+    is_checked_out_db = @is_checked_out ? 't' : 'f'
+    DB.exec("UPDATE books SET title = '#{@title}', checkout = '#{@checkout}', author_id = #{@author_id}, patron_id = #{@patron_id}, is_checked_out = '#{is_checked_out_db}' WHERE id = #{self.id()};")
   end
   
   def self.all()
@@ -43,7 +44,7 @@ class Book
       author_id = book.fetch('author_id').to_i()
       patron_id = book.fetch('patron_id').to_i()
       id = book.fetch('id').to_i()
-      is_checked_out = book.fetch('is_checked_out')
+      is_checked_out = book.fetch('is_checked_out') == 't' ? true : false
       books.push(Book.new({:title => title, :checkout => checkout, :author_id => author_id, :patron_id => patron_id, :is_checked_out => is_checked_out, :id => id}))
     end
     books
@@ -60,7 +61,7 @@ class Book
     Book.all().each() do |book|
       matches = true
       author = Author.find(book.author_id())
-      attributes = {:title => book.title(), :last_name => author.last_name(), :first_name => author.first_name()}
+      attributes = {:title => book.title(), :last_name => author.last_name(), :first_name => author.first_name(), :is_checked_out => book.is_checked_out()}
       criteria.each_key() do |key|
         matches = false if criteria[key] != attributes[key]
       end

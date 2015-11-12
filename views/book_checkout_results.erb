@@ -1,0 +1,16 @@
+<%if @books != false%>
+	<h2><ul>
+		<%@books.each() do |book|%>
+			<li>
+				<form action='/patrons/<%= @patron.id()%>/checkout' method='post'>
+					<label><%= book.title()%></label>
+					<input name='_method' type='hidden' value='patch'>
+					<input name='book-id' type='hidden' value='<%= book.id()%>'>
+					<button type='submit' class='btn btn-primary' id='<%= book.id()%>-checkout'>Check Out</button>
+				</form>
+			</li>
+		<%end%>
+	</ul></h2>
+<%else%>
+	<h2>No books found.</h2>
+<%end%>

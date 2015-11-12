@@ -28,7 +28,7 @@ end
 end
 
 @@create_book = lambda do |attributes|
-  base = {:title => '', :checkout => Date.new(1919, 5, 8), :author_id => 0, :patron_id => 0, :id => nil}
+  base = {:title => '', :checkout => Date.new(1919, 5, 8), :is_checked_out => false, :author_id => 0, :patron_id => 0, :id => nil}
   base.merge!(attributes)
   Book.new(base)
 end

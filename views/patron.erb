@@ -1,3 +1,21 @@
+<h2>Checked Out Books:</h2>
+<ul>
+	<%@books.each() do |book|%>
+		<h2><li>
+			<a href='/books/<%= book.id()%>'><%= book.title()%></a>
+			<form action='/patrons/<%= @patron.id()%>/return' method='post'>
+				<input name='_method' type='hidden' value='patch'>
+				<input name='book-id' type='hidden' id='<%= book.id()%>-return' value='<%= book.id()%>'>
+				<button class='btn btn-primary' type='submit'>Return</button>
+			</form>
+		</li><h2>
+	<%end%>
+</ul>
+
+<a href='/patrons/<%= @patron.id()%>/search_books' class='btn btn-primary'>Search Books for Checkout</a>
+
+<br>
+<br>
 <form action='/patrons/delete_success' method='post'>
 	<input name='_method' type='hidden' value='delete'>
 	<input name='patron-id' type='hidden' value='<%= @patron.id()%>'>

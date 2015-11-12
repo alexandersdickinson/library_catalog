@@ -195,3 +195,82 @@ describe('the book creation path', :type => :feature) do
     expect(page).to(have_content("The Mezzotint"))
   end
 end
+
+describe('the book search path', :type => :feature) do
+  it('returns books found by one criterion') do
+    author1 = Author.new({:last_name => "Vollmann", :first_name => "William", :id => nil})
+    author2 = Author.new({:last_name => "Grimm", :first_name => "Wilhelm", :id => nil})
+    author1.save()
+    author2.save()
+    book1 = @@create_book.call({:title => "Kinder und Hausmaerchen", :author_id => author2.id()})
+    book2 = @@create_book.call({:title => "An Afghanistan Picture Show", :author_id => author1.id()})
+    book3 = @@create_book.call({:title => "You Bright and Risen Angels", :author_id => author1.id()})
+    book1.save()
+    book2.save()
+    book3.save()
+    visit('/')
+    click_link('Search Books')
+    fill_in('last-name', :with => "Vollmann")
+    click_button('Search')
+    expect(page).to(have_content("An Afghanistan Picture Show"))
+    expect(page).to(have_content("You Bright and Risen Angels"))
+  end
+  
+  it('returns books found by multiple criteria') do
+    author1 = Author.new({:last_name => "Wittgenstein", :first_name => "Ludwig", :id => nil})
+    author1.save()
+    book1 = @@create_book.call({:title => "Philosophische Untersuchungen", :author_id => author1.id()})
+    book1.save()
+    visit('/')
+    click_link('Search Books')
+    fill_in('last-name', :with => "Wittgenstein")
+    fill_in('first-name', :with => "Ludwig")
+    fill_in('title', :with => "Philosophische Untersuchungen")
+    click_button('Search')
+    expect(page).to(have_content("Philosophische Untersuchungen"))
+  end
+  
+  it('tells the user when no books are found') do
+    visit('/')
+    click_link('Search Books')
+    fill_in('last-name', :with => "Smith")
+    fill_in('first-name', :with => "John")
+    click_button('Search')
+    expect(page).to(have_content("No books found."))
+  end
+end
+
+describe('the book checkout path', :type => :feature) do
+  it('allows a patron to check out a book') do
+    patron = Patron.new({:last_name => "Smith", :first_name => "John", :id => nil})
+    patron.save()
+    author = Author.new({:last_name => "Andreski", :first_name => "Stanislav", :id => nil})
+    author.save()
+    book = @@create_book.call({:title => "Social Sciences as Sorcery", :author_id => author.id()})
+    book.save()
+    visit("/patrons/#{patron.id()}")
+    click_link('Search Books for Checkout')
+    fill_in("last-name", :with => "Andreski")
+    click_button('Search')
+    click_button("#{book.id()}-checkout")
+    expect(page).to(have_content('Social Sciences as Sorcery'))
+  end
+end
+
+describe('the book return path', :type => :feature) do
+  it('removes books from the list of borrowed books') do
+    patron = Patron.new({:last_name => "Smith", :first_name => "John", :id => nil})
+    patron.save()
+    author = Author.new({:last_name => "Andreski", :first_name => "Stanislav", :id => nil})
+    author.save()
+    book = @@create_book.call({:title => "Social Sciences as Sorcery", :author_id => author.id()})
+    book.save()
+    visit("/patrons/#{patron.id()}")
+    click_link('Search Books for Checkout')
+    fill_in("last-name", :with => "Andreski")
+    click_button('Search')
+    click_button("#{book.id()}-checkout")
+    click_button("#{book.id()}-return")
+    expect(page).not_to(have_content("Social Sciences as Sorcery"))
+  end
+end
